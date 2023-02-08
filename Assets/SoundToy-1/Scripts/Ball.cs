@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    private Rigidbody2D rigidbody;
+
+    //getters & setters
+    public Rigidbody2D RigidBody {get=>rigidbody;private set=>rigidbody=value;}
+
+    void Awake() {
+        RigidBody = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        RigidBody = GetComponent<Rigidbody2D>();
+        if (RigidBody == null) Debug.Log("rigidbody is null");
+    }
+
+    
     void Update()
     {
         

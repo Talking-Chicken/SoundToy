@@ -22,6 +22,12 @@ public class BallSpawner : MonoBehaviour {
     [SerializeField]
     int BPM = 120;
 
+    [SerializeField] private Vector2 direction;
+    [SerializeField] private float force;
+
+    //getters & setters
+    public Vector2 Direction {get=>direction;private set=>direction = value;}
+
     #region Delegates
     private void OnEnable() {
         //clock.Beat += SpawnBall;
@@ -37,7 +43,13 @@ public class BallSpawner : MonoBehaviour {
     void SpawnBall() {
         pleaseSpawn = false;
         Debug.Log("Spawning ball");
-        Instantiate(ball, transform.position, Quaternion.identity);
+        GameObject ballObj = Instantiate(ball, transform.position, Quaternion.identity).gameObject;
+        Ball thisBall = ballObj.GetComponent<Ball>();
+        if (ballObj == null) Debug.Log("ballObj is null");
+        if (thisBall == null)  Debug.Log("thisBall is null");
+        if (thisBall.RigidBody == null) Debug.Log("rigidbody of thisBall is null");
+        if (Direction == null) Debug.Log("Direction is null");
+        thisBall.RigidBody.AddForce(Direction * force);
     }
 
     void KeyboardInput() {
@@ -45,13 +57,18 @@ public class BallSpawner : MonoBehaviour {
             SpawnBall();
     }
     private void Update() {
+        Direction = ((Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) - (Vector2)transform.position).normalized;
         if (pleaseSpawn) {
             SpawnBall();
         }
         KeyboardInput();
+        LookAtCursor();
         //if (Input.GetKeyDown(KeyCode.Space)) {
         //    clock.SetBPM(BPM);
         //}
     }
 
+    void LookAtCursor() {
+        transform.up = Direction;
+    }
 }

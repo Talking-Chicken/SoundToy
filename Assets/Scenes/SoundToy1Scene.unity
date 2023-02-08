@@ -418,6 +418,8 @@ MonoBehaviour:
   ball: {fileID: 4770524602699524857, guid: 0c962f145ca754040a2eb7193f20d587, type: 3}
   tickValue: 96
   BPM: 120
+  direction: {x: 0, y: 0}
+  force: 2.61
 --- !u!212 &965132074
 SpriteRenderer:
   m_ObjectHideFlags: 0
