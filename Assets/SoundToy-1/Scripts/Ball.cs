@@ -5,6 +5,8 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody2D rigidbody;
+    [SerializeField] private float maxCooldown;
+    private float cooldownTimer = 0.0f; 
 
     //getters & setters
     public Rigidbody2D RigidBody {get=>rigidbody;private set=>rigidbody=value;}
@@ -22,6 +24,18 @@ public class Ball : MonoBehaviour
     
     void Update()
     {
-        
+        cooldownTimer = Mathf.Max(cooldownTimer - Time.deltaTime, 0.0f);
     }
+
+    void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.CompareTag("Platform")) {
+            Debug.Log("Colliding platform");
+            if (cooldownTimer <= 0.0f) {
+                Debug.Log("cooldown timer");
+                VisualManager.Instance.addBounceCount();
+            }
+        }
+    }
+
+    
 }
