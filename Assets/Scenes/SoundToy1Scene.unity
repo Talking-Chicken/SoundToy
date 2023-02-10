@@ -325,6 +325,8 @@ MonoBehaviour:
   - {fileID: 7135668030406199129, guid: e666575a6e992004e9779e06a4c1dfd3, type: 3}
   - {fileID: 7135668030406199129, guid: 37713712d54976a4396ef9059d2b0fc5, type: 3}
   - {fileID: 7135668030406199129, guid: fa4af93b016e3ef4f8211a26b6d55fc3, type: 3}
+  - {fileID: 7135668030406199129, guid: 2f43a73faf7fa1c4ab6086f217a20edb, type: 3}
+  - {fileID: 7135668030406199129, guid: bca5658ed7823ad4cbdd15c88dd4b4d4, type: 3}
   cursor: {fileID: 1870033672}
 --- !u!4 &346825016
 Transform:
@@ -496,6 +498,7 @@ GameObject:
   - component: {fileID: 623855628}
   - component: {fileID: 623855627}
   - component: {fileID: 623855629}
+  - component: {fileID: 623855630}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -545,9 +548,36 @@ MonoBehaviour:
   bounceCount: 0
   globalLight: {fileID: 295690258}
   bloom: {fileID: 0}
+  chromaticAberration: {fileID: 0}
   globalVolume: {fileID: 1675946107}
   maxComboTimer: 1
-  lerpTime: 1
+  maxLerpTime: 1.5
+--- !u!61 &623855630
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623855626}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.07231426, y: 0.00000023841858}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 18.21073, y: 10.545446}
+  m_EdgeRadius: 0
 --- !u!1 &965132072
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,7 +698,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3199705218576050429, guid: e666575a6e992004e9779e06a4c1dfd3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -11.09
       objectReference: {fileID: 0}
     - target: {fileID: 3199705218576050429, guid: e666575a6e992004e9779e06a4c1dfd3, type: 3}
       propertyPath: m_LocalPosition.y

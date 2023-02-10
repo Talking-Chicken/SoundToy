@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6475129940275407677}
   - component: {fileID: -7044670938328635747}
   m_Layer: 0
-  m_Name: PlatformC
+  m_Name: PlatformE
   m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aee1ed1dd74a47d42be3d11b0f46d92e, type: 2}
+  - {fileID: 2100000, guid: b4461f1c149c2234bb2200c05733120c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -136,7 +136,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5a9bc228f4d02214d86e2a1dfa8224f9, type: 3}
+  m_audioClip: {fileID: 8300000, guid: de26590b4eb2c4044b61196588bad917, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

@@ -10,11 +10,14 @@ public class VisualManager : Singleton<VisualManager>
     public int bounceCount = 0;
     public Light2D globalLight;
     public Bloom bloom;
+    public ChromaticAberration chromaticAberration;
     public Volume globalVolume;
 
     [SerializeField] private float maxComboTimer;
     private float comboTimer = 0.0f;
-    [SerializeField] private float lerpTime;
+    [SerializeField] private float maxLerpTime;
+    private float lerpTime = 0;
+    private bool isBallInside = false;
 
 
     //FSM
@@ -44,6 +47,7 @@ public class VisualManager : Singleton<VisualManager>
     void Start()
     {
         globalVolume.profile.TryGet<Bloom>(out bloom);
+        globalVolume.profile.TryGet<ChromaticAberration>(out chromaticAberration);
         currentState = visualState0;
     }
 
@@ -55,12 +59,20 @@ public class VisualManager : Singleton<VisualManager>
 
         comboTimer = Mathf.Max(comboTimer - Time.deltaTime, 0.0f);
 
-        if (comboTimer <= 0.0f) {
+        if (comboTimer <= 0.0f && !isBallInside) {
             bounceCount = 0;
-        }
+            
+            lerpTime = Mathf.Min(lerpTime + Time.deltaTime, maxLerpTime);
+            //lerp the effect back
+            bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 0.0f, lerpTime/maxLerpTime);
+            chromaticAberration.intensity.value = Mathf.Lerp(chromaticAberration.intensity.value, 0.0f, lerpTime/maxLerpTime);
+            globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.0f, lerpTime/maxLerpTime);
 
-        bloom.intensity.value = bounceCount * 0.1f;
-        globalLight.intensity = bounceCount * 0.1f;
+        } else {
+            bloom.intensity.value = bounceCount * 0.1f;
+            chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
+            globalLight.intensity = bounceCount * 0.1f;
+        }
 
         // switch(bounceCount) {
         //     case 0:
@@ -90,5 +102,18 @@ public class VisualManager : Singleton<VisualManager>
     public void addBounceCount() {
         comboTimer = maxComboTimer;
         bounceCount++;
+        lerpTime = 0;
+    }
+
+    void OnTriggerStay2D(Collider2D collider) {
+        if (collider.CompareTag("Ball"))
+            isBallInside = true;
+    }
+
+    void OnTriggerExit2D(Collider2D collider) {
+        if (collider.CompareTag("Ball")) {
+            Destroy(collider.gameObject);
+            isBallInside = false;
+        }
     }
 }

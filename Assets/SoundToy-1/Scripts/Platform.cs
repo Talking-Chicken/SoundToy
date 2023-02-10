@@ -23,6 +23,8 @@ public class Platform : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Ball")) {
+            audioSource.pitch = 0.5f + VisualManager.Instance.bounceCount * 0.05f;
+            audioSource.pitch = 1 + VisualManager.Instance.bounceCount * 0.05f;
             audioSource.Play();
             //pxStrax.KeyOn(midiNote); //Part III
         }
