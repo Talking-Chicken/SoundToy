@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Platform : MonoBehaviour {
     AudioSource audioSource;
+    private bool isHited = false;
 
     //Part III Adding synth
     //PXStrax pxStrax;
@@ -12,6 +13,9 @@ public class Platform : MonoBehaviour {
     float midiNote = 100.0f;
 
     float[] d = new float[100];
+
+    //getters & setters
+    public bool IsHited {get=>isHited;set=>isHited=value;}
 
     private void Awake() {
         //pxStrax = GetComponent<PXStrax>();//Part III
@@ -26,6 +30,9 @@ public class Platform : MonoBehaviour {
             audioSource.pitch = 0.5f + VisualManager.Instance.bounceCount * 0.05f;
             audioSource.pitch = 1 + VisualManager.Instance.bounceCount * 0.05f;
             audioSource.Play();
+
+            IsHited = true;
+            gameObject.layer = 6;
             //pxStrax.KeyOn(midiNote); //Part III
         }
     }

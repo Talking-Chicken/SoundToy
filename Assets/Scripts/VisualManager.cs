@@ -68,10 +68,16 @@ public class VisualManager : Singleton<VisualManager>
             chromaticAberration.intensity.value = Mathf.Lerp(chromaticAberration.intensity.value, 0.0f, lerpTime/maxLerpTime);
             globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.0f, lerpTime/maxLerpTime);
 
+            if (bloom.intensity.value <= 0.01f)
+                foreach (Platform platform in FindObjectsOfType<Platform>())
+                    platform.gameObject.layer = 7;
+
         } else {
             bloom.intensity.value = bounceCount * 0.1f;
             chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
             globalLight.intensity = bounceCount * 0.1f;
+
+            
         }
 
         // switch(bounceCount) {
