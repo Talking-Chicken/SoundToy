@@ -29,9 +29,7 @@ public class Ball : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Platform")) {
-            Debug.Log("Colliding platform");
             if (cooldownTimer <= 0.0f) {
-                Debug.Log("cooldown timer");
                 VisualManager.Instance.addBounceCount();
             }
         }

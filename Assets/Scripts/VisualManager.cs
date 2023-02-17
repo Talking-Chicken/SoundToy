@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Beat;
 
 /*this class count the bounce time of the ball and set visual effects based on the number*/
 public class VisualManager : Singleton<VisualManager>
@@ -19,6 +20,11 @@ public class VisualManager : Singleton<VisualManager>
     private float lerpTime = 0;
     private bool isBallInside = false;
 
+    [Header("Clock")]
+    [SerializeField] Clock clock;
+    [SerializeField] Beat.TickValue tickValue;
+    bool pleaseChange = false, isUpbeat = false;
+    public bool changedOnThisBeat = false;
 
     //FSM
     private VisualStateBase currentState;
@@ -42,6 +48,15 @@ public class VisualManager : Singleton<VisualManager>
                 currentState.EnterState(this);
             }
         }
+    }
+
+    private void OnEnable() {
+        clock.Beat += OnBeat;
+        clock.Eighth += OnBeat;
+    }
+    private void OnDisable() {
+        clock.Beat -= OnBeat;
+        clock.Eighth -= OnBeat;
     }
 
     void Start()
@@ -73,36 +88,33 @@ public class VisualManager : Singleton<VisualManager>
                     platform.gameObject.layer = 7;
 
         } else {
-            bloom.intensity.value = bounceCount * 0.1f;
-            chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
-            globalLight.intensity = bounceCount * 0.1f;
-
-            
+            if (pleaseChange) {
+                bloom.intensity.value = Mathf.Min(bounceCount * 0.07f, 0.9f);
+                chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
+                globalLight.intensity = bounceCount * 0.07f;
+            }
         }
 
-        // switch(bounceCount) {
-        //     case 0:
-        //         Debug.Log("0");
-        //         if (bloom.intensity.value >= 0.1f) bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 0.0f, lerpTime);
-        //         else bloom.intensity.value = 0.0f;
+        if (pleaseChange) {
+            if (!changedOnThisBeat) {
+                isUpbeat = !isUpbeat;
+                
+                if (isUpbeat) {
+                    globalLight.intensity += 0.1f;
+                    
+                    
+                }
+                else {
+                    globalLight.intensity = Mathf.Max(globalLight.intensity-0.1f, 0.0f);
+                }
 
-        //         if (globalLight.intensity >= 0.1f) globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.0f, lerpTime);
-        //         else globalLight.intensity = 0.0f;
+                globalLight.color = new Color (Random.Range(0, 255),
+                                               Random.Range(0,255),
+                                               Random.Range(0, 255));
+                changedOnThisBeat = true;
+            }
+        }
 
-        //         break;
-        //     case 1:
-        //         Debug.Log("1");
-        //         bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 0.15f, lerpTime);
-
-        //         globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.15f, lerpTime);
-        //         break;
-        //     case 4:
-        //         Debug.Log("case 4");
-        //         bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 0.55f, lerpTime + 1.0f);
-
-        //         globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.5f, lerpTime + 1.0f);
-        //         break;
-        // }
     }
 
     public void addBounceCount() {
@@ -121,5 +133,16 @@ public class VisualManager : Singleton<VisualManager>
             Destroy(collider.gameObject);
             isBallInside = false;
         }
+    }
+
+    void OnBeat(Beat.Args beatArgs) {
+        if(tickValue == beatArgs.BeatVal) {
+            ReactAction();
+        }
+    }
+
+    void ReactAction() {
+        changedOnThisBeat = false;
+        pleaseChange = true;
     }
 }

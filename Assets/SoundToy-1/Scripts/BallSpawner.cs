@@ -25,15 +25,16 @@ public class BallSpawner : MonoBehaviour {
     [SerializeField] private Vector2 direction;
     [SerializeField] private float force;
 
+
     //getters & setters
     public Vector2 Direction {get=>direction;private set=>direction = value;}
 
     #region Delegates
     private void OnEnable() {
-        //clock.Beat += SpawnBall;
+        clock.Beat += SpawnBall;
     }
     private void OnDisable() {
-        //clock.Beat -= SpawnBall;
+        clock.Beat -= SpawnBall;
     }
     #endregion
 
@@ -41,15 +42,16 @@ public class BallSpawner : MonoBehaviour {
         pleaseSpawn = true;
     }
     void SpawnBall() {
-        pleaseSpawn = false;
-        Debug.Log("Spawning ball");
-        GameObject ballObj = Instantiate(ball, transform.position, Quaternion.identity).gameObject;
-        Ball thisBall = ballObj.GetComponent<Ball>();
-        if (ballObj == null) Debug.Log("ballObj is null");
-        if (thisBall == null)  Debug.Log("thisBall is null");
-        if (thisBall.RigidBody == null) Debug.Log("rigidbody of thisBall is null");
-        if (Direction == null) Debug.Log("Direction is null");
-        thisBall.RigidBody.AddForce(Direction * force);
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            pleaseSpawn = false;
+            GameObject ballObj = Instantiate(ball, transform.position, Quaternion.identity).gameObject;
+            Ball thisBall = ballObj.GetComponent<Ball>();
+            if (ballObj == null) Debug.Log("ballObj is null");
+            if (thisBall == null)  Debug.Log("thisBall is null");
+            if (thisBall.RigidBody == null) Debug.Log("rigidbody of thisBall is null");
+            if (Direction == null) Debug.Log("Direction is null");
+            thisBall.RigidBody.AddForce(Direction * force);
+        }
     }
 
     void KeyboardInput() {
@@ -61,7 +63,7 @@ public class BallSpawner : MonoBehaviour {
         if (pleaseSpawn) {
             SpawnBall();
         }
-        KeyboardInput();
+        // KeyboardInput();
         LookAtCursor();
         //if (Input.GetKeyDown(KeyCode.Space)) {
         //    clock.SetBPM(BPM);
