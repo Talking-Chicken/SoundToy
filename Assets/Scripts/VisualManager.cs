@@ -89,7 +89,7 @@ public class VisualManager : Singleton<VisualManager>
 
         } else {
             if (pleaseChange) {
-                bloom.intensity.value = Mathf.Min(bounceCount * 0.07f, 0.9f);
+                bloom.intensity.value = Mathf.Min(bounceCount * 0.07f, 0.39f);
                 chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
                 globalLight.intensity = bounceCount * 0.07f;
             }
