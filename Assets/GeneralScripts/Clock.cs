@@ -244,6 +244,8 @@ namespace Beat
         /// </summary>
         public event BeatEvent Measure;
 
+        public event BeatEvent QuarterTriplet;
+
         /// <summary>
         /// Creates a beat mask array based on the number of ticks per measure
         /// </summary>
@@ -501,6 +503,9 @@ namespace Beat
             }
             if (TickMask[TickValue.QuarterTriplet])
             {
+                if (QuarterTriplet != null)
+                    QuarterTriplet(new Args(TickValue.QuarterTriplet, _nextQuarterTriplet,
+                        _nextQuarterTriplet + _quarterTripletLength, TickMask));
                 _nextQuarterTriplet += _quarterTripletLength;
             }
             if (TickMask[TickValue.Quarter])

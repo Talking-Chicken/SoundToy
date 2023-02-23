@@ -7,7 +7,7 @@ public class Platform : MonoBehaviour {
     private bool isHited = false;
 
     //Part III Adding synth
-    //PXStrax pxStrax;
+    PXStrax pxStrax;
 
     [SerializeField]
     float midiNote = 100.0f;
@@ -18,7 +18,7 @@ public class Platform : MonoBehaviour {
     public bool IsHited {get=>isHited;set=>isHited=value;}
 
     private void Awake() {
-        //pxStrax = GetComponent<PXStrax>();//Part III
+        pxStrax = GetComponent<PXStrax>();//Part III
         audioSource = GetComponent<AudioSource>();
         for(int i = 0; i < d.Length; i++) {
             d[i] = Random.Range(100, 900);
@@ -27,13 +27,18 @@ public class Platform : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Ball")) {
-            // audioSource.pitch = 0.5f + VisualManager.Instance.bounceCount * 0.01f;
-            audioSource.pitch = 1 + VisualManager.Instance.bounceCount * 0.01f;
+             //Part III
+            audioSource.pitch = 0.5f + VisualManager.Instance.bounceCount * 0.01f;
+            // audioSource.pitch = 1 + VisualManager.Instance.bounceCount * 0.01f;
             audioSource.Play();
 
             IsHited = true;
-            gameObject.layer = 6;
-            //pxStrax.KeyOn(midiNote); //Part III
+            // gameObject.layer = 6;
+            pxStrax.KeyOn(midiNote);
+
+            if (VisualManager.Instance.CurrentMode == VisualManager.Mode.Free) {
+                gameObject.layer = 6;
+            }
         }
     }
 

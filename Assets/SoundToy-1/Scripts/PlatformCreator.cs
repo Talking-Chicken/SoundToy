@@ -44,6 +44,7 @@ public class PlatformCreator : MonoBehaviour {
 
         if (currentPlatform == null) {
             currentPlatform = Instantiate(platforms[selectedPlatformIndex]);
+            VisualManager.Instance.Platforms.Add(currentPlatform);
         }
 
         Vector3 delta = pos - startPosition;
@@ -54,7 +55,7 @@ public class PlatformCreator : MonoBehaviour {
 
         lScale.x = delta.magnitude;
         currentPlatform.transform.localScale = lScale;
-
+        
     }
 
     void CursorTracking(Vector2 pos) {

@@ -53,9 +53,18 @@ public class DrumManager : MonoBehaviour
 
     private void Update() {
         if (pleaseChange) {
-            if (!VisualManager.Instance.changedOnThisBeat) {
-                if (!audioSource.isPlaying)
+            if (VisualManager.Instance.CurrentRhythm == VisualManager.RhythmType.Quarter) {
+                if (!VisualManager.Instance.quarterChangedOnThisBeat) {
                     audioSource.Play();
+                }
+            } else if (VisualManager.Instance.CurrentRhythm == VisualManager.RhythmType.Eighth) {
+                if (!VisualManager.Instance.eighthChangedOnThisBeat) {
+                    audioSource.Play();
+                }
+            } else if (VisualManager.Instance.CurrentRhythm == VisualManager.RhythmType.QuarterTriplet) {
+                if (!VisualManager.Instance.quarterTripletChangedOnThisBeat) {
+                    audioSource.Play();
+                }
             }
             // ChangeColor();
             

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using Beat;
+using TMPro;
 
 /*this class count the bounce time of the ball and set visual effects based on the number*/
 public class VisualManager : Singleton<VisualManager>
@@ -23,8 +24,21 @@ public class VisualManager : Singleton<VisualManager>
     [Header("Clock")]
     [SerializeField] Clock clock;
     [SerializeField] Beat.TickValue tickValue;
-    bool pleaseChange = false, isUpbeat = false;
-    public bool changedOnThisBeat = false;
+    [SerializeField] Beat.TickValue quarterValue, eighthValue, quarterTripletValue;
+    bool pleaseChangeQuarter, pleaseChangeEighth, pleaseChangeQuarterTriplet, isUpbeat = false;
+    public bool quarterChangedOnThisBeat = false, eighthChangedOnThisBeat = false, quarterTripletChangedOnThisBeat = false;
+    public enum RhythmType {Quarter, Eighth, QuarterTriplet}
+    public RhythmType CurrentRhythm = RhythmType.Quarter;
+
+    [Header("Platform")]
+    public List<Platform> Platforms = new List<Platform>();
+    public int CurrentPlatformIndex = 0;
+
+    [Header("Mode")]
+    public Mode CurrentMode = Mode.Free;
+    public enum Mode {Beat, Free}
+    public TextMeshProUGUI ModeText;
+    
 
     //FSM
     private VisualStateBase currentState;
@@ -53,10 +67,12 @@ public class VisualManager : Singleton<VisualManager>
     private void OnEnable() {
         clock.Beat += OnBeat;
         clock.Eighth += OnBeat;
+        clock.QuarterTriplet += OnBeat;
     }
     private void OnDisable() {
         clock.Beat -= OnBeat;
         clock.Eighth -= OnBeat;
+        clock.QuarterTriplet -= OnBeat;
     }
 
     void Start()
@@ -69,8 +85,19 @@ public class VisualManager : Singleton<VisualManager>
     
     void Update()
     {
-        
-        VolumeManager.instance.stack.GetComponent<Bloom>().intensity.value = 100.0f;
+        //detect Mode
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) {
+            if (CurrentMode == Mode.Free) {
+                CurrentMode = Mode.Beat;
+            } else {
+                CurrentMode = Mode.Free;
+                CurrentRhythm = RhythmType.Quarter;
+            }
+            
+            ModeText.text = "Mode: "+CurrentMode.ToString();
+        }
+            
+
 
         comboTimer = Mathf.Max(comboTimer - Time.deltaTime, 0.0f);
 
@@ -83,37 +110,127 @@ public class VisualManager : Singleton<VisualManager>
             chromaticAberration.intensity.value = Mathf.Lerp(chromaticAberration.intensity.value, 0.0f, lerpTime/maxLerpTime);
             globalLight.intensity = Mathf.Lerp(globalLight.intensity, 0.0f, lerpTime/maxLerpTime);
 
-            if (bloom.intensity.value <= 0.01f)
+            if (bloom.intensity.value <= 0.1f)
                 foreach (Platform platform in FindObjectsOfType<Platform>())
                     platform.gameObject.layer = 7;
 
         } else {
-            if (pleaseChange) {
-                bloom.intensity.value = Mathf.Min(bounceCount * 0.07f, 0.39f);
-                chromaticAberration.intensity.value = bounceCount * 0.1f + 0.2f;
-                globalLight.intensity = bounceCount * 0.07f;
-            }
+            bloom.intensity.value = Mathf.Min(bounceCount * 0.07f, 0.39f);
+            chromaticAberration.intensity.value = Mathf.Min(bounceCount * 0.1f + 0.1f, 1.0f);
+            globalLight.intensity = Mathf.Min(bounceCount * 0.05f, 1.5f);
         }
 
-        if (pleaseChange) {
-            if (!changedOnThisBeat) {
-                isUpbeat = !isUpbeat;
-                
-                if (isUpbeat) {
-                    globalLight.intensity += 0.1f;
-                    
-                    
-                }
-                else {
-                    globalLight.intensity = Mathf.Max(globalLight.intensity-0.1f, 0.0f);
-                }
+        #region free mode
+        if (CurrentMode == Mode.Free) {
+            if (pleaseChangeQuarter) {
+                if (!quarterChangedOnThisBeat) {
+                    isUpbeat = !isUpbeat;
 
-                globalLight.color = new Color (Random.Range(0, 255),
-                                               Random.Range(0,255),
-                                               Random.Range(0, 255));
-                changedOnThisBeat = true;
+                    globalLight.color = new Color (Random.Range(0, 255),
+                                                Random.Range(0,255),
+                                                Random.Range(0, 255));
+                    quarterChangedOnThisBeat = true;
+                }
             }
         }
+        #endregion
+
+        #region beat Mode
+        if (CurrentMode == Mode.Beat) {
+            if (Platforms.Count % 4 == 0 && Platforms.Count > 0) { //eighth
+                CurrentRhythm = RhythmType.Eighth;
+                if (pleaseChangeEighth) {
+                    if (!eighthChangedOnThisBeat) {
+                        isUpbeat = !isUpbeat;
+
+                        globalLight.color = new Color (Random.Range(0, 255),
+                                                    Random.Range(0,255),
+                                                    Random.Range(0, 255));
+                        eighthChangedOnThisBeat = true;
+
+                        if (CurrentPlatformIndex <= 2)
+                            CurrentPlatformIndex++;
+                        else
+                            CurrentPlatformIndex = 0;
+
+                        //changing layer of each platforms
+                        int loopIndex = CurrentPlatformIndex;
+                        for (int i = 0; i < Platforms.Count; i++) {
+                            if (i == loopIndex) {
+                                Platforms[i].gameObject.layer = 6;
+                                loopIndex += 4;
+                            } else {
+                                Platforms[i].gameObject.layer = 7;
+                            }
+                        }
+                    }
+                }
+            } else if (Platforms.Count % 3 == 0 && Platforms.Count > 0) { //Triplet 
+                CurrentRhythm = RhythmType.QuarterTriplet;
+                if (pleaseChangeQuarterTriplet) {
+                    if (!quarterTripletChangedOnThisBeat) {
+                        isUpbeat = !isUpbeat;
+
+                        globalLight.color = new Color (Random.Range(0, 255),
+                                                    Random.Range(0,255),
+                                                    Random.Range(0, 255));
+                        quarterTripletChangedOnThisBeat = true;
+
+                        if (CurrentPlatformIndex <= 1)
+                            CurrentPlatformIndex++;
+                        else
+                            CurrentPlatformIndex = 0;
+
+                        //changing layer of each platforms
+                        int loopIndex = CurrentPlatformIndex;
+                        for (int i = 0; i < Platforms.Count; i++) {
+                            if (i == loopIndex) {
+                                Platforms[i].gameObject.layer = 6;
+                                loopIndex += 3;
+                            } else {
+                                Platforms[i].gameObject.layer = 7;
+                            }
+                        }
+                    }
+                }
+            } else { //quater
+                CurrentRhythm = RhythmType.Quarter;
+                if (pleaseChangeQuarter) {
+                    if (!quarterChangedOnThisBeat) {
+                        isUpbeat = !isUpbeat;
+
+                        globalLight.color = new Color (Random.Range(0, 255),
+                                                    Random.Range(0,255),
+                                                    Random.Range(0, 255));
+                        quarterChangedOnThisBeat = true;
+
+                        if (CurrentPlatformIndex <= 0)
+                            CurrentPlatformIndex++;
+                        else
+                            CurrentPlatformIndex = 0;
+
+                        //changing layer of each platforms
+                        for (int i = 0; i < Platforms.Count; i++) {
+                            if (i % 2 == CurrentPlatformIndex) {
+                                Platforms[i].gameObject.layer = 6;
+                            } else {
+                                Platforms[i].gameObject.layer = 7;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
+        // if (isUpbeat) {
+        //     if (CurrentMode == Mode.Beat)
+        //         globalLight.intensity += 0.2f;
+        // } else {
+        //     if (CurrentMode == Mode.Beat)
+        //         globalLight.intensity = Mathf.Max(globalLight.intensity-0.2f, 0.0f);
+        // }
+        
 
     }
 
@@ -136,13 +253,31 @@ public class VisualManager : Singleton<VisualManager>
     }
 
     void OnBeat(Beat.Args beatArgs) {
-        if(tickValue == beatArgs.BeatVal) {
-            ReactAction();
+        if(quarterValue == beatArgs.BeatVal) {
+            ReactActionQuarter();
+        }
+
+        if (eighthValue == beatArgs.BeatVal) {
+            ReactActionEighth();
+        }
+
+        if (quarterTripletValue == beatArgs.BeatVal) {
+            ReactActionQuarterTriplet();
         }
     }
 
-    void ReactAction() {
-        changedOnThisBeat = false;
-        pleaseChange = true;
+    void ReactActionQuarter() {
+        quarterChangedOnThisBeat = false;
+        pleaseChangeQuarter = true;
+    }
+
+    void ReactActionEighth() {
+        eighthChangedOnThisBeat = false;
+        pleaseChangeEighth = true;
+    }
+
+    void ReactActionQuarterTriplet() {
+        quarterTripletChangedOnThisBeat = false;
+        pleaseChangeQuarterTriplet = true;
     }
 }
