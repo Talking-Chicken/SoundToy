@@ -231,7 +231,8 @@ public class VisualManager : Singleton<VisualManager>
         //         globalLight.intensity = Mathf.Max(globalLight.intensity-0.2f, 0.0f);
         // }
         
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
     public void addBounceCount() {
